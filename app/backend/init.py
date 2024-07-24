@@ -6,9 +6,9 @@ import requests
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from app.backend import zoho_auth
-from app.backend import zoho
-from app.backend.zoho_tools import invoice_tools
+from backend import zoho_auth
+from backend import zoho
+from backend.zoho_tools import invoice_tools
 
 
 def debug_requests_on():

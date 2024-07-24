@@ -1,6 +1,6 @@
 import json
 
-from app.backend.gpt import gpt_service
+from backend.gpt import gpt_service
 
 
 def get_response(client, system_message, messages, tools, model):
