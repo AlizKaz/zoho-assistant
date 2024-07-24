@@ -107,7 +107,13 @@ class ZohoAuth:
             success, data = self.get_access_and_refresh_token()
             if success:
                 self.store_access_token(data)
+            elif data == "invalid code":
+                raise Exception(f"Unable to get access token. "
+                                f"\nYou might need to [Generate a new authorization code]("
+                                f"https://www.zoho.com/accounts/protocol/oauth/self-client/authorization-code-flow"
+                                f".html) in Zoho API Console: https://api-console.zoho.com/"
+                                f"\nerror: {data}")
             else:
-                raise Exception(f"unable to get access token. error: {data}")
+                raise Exception(f"Unable to get access token. error: {data}")
 
         return data
