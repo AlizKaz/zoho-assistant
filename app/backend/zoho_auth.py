@@ -1,22 +1,32 @@
 # https://www.zoho.com/accounts/protocol/oauth/self-client/authorization-code-flow.html
+import asyncio
+
 import requests
+
+from httpx_oauth.oauth2 import OAuth2
 
 
 class ZohoAuth:
-    def __init__(self, client_id, client_secret, authorization_code, auth_store_filepath, accounts_server_url):
+    def __init__(self, client_id, client_secret, auth_store_filepath, accounts_server_url, client_type,
+                 redirect_uri=None):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.authorization_code = authorization_code
-        self.auth_store_filepath = auth_store_filepath
         self.accounts_server_url = accounts_server_url
+        self.client_type = client_type
+        if self.client_type not in ["Self-Client", "Server-base Application"]:
+            raise Exception(f'invalid value set for client_type: ${self.client_type}. valid values: ["Self Client", '
+                            f'"Server-base Application"]')
+        self.auth_store_filepath = auth_store_filepath
+        self.redirect_uri = redirect_uri
 
-    def get_access_and_refresh_token(self):
+    def get_access_and_refresh_token(self, authorization_code):
+        print("getting access and refresh token")
         api_url = f'{self.accounts_server_url}/oauth/v2/token'
         params = {
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'grant_type': 'authorization_code',
-            'code': self.authorization_code,
+            'code': authorization_code,
         }
 
         # {
@@ -34,6 +44,24 @@ class ZohoAuth:
             return False, error
         else:
             return True, r.json()
+
+    async def get_access_and_refresh_token_2(self, authorization_code, redirect_uri):
+        print(f"getting access and refresh token 2. code:{authorization_code}")
+
+        client = OAuth2(
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            authorize_endpoint="https://accounts.zoho.com/oauth/v2/auth",
+            access_token_endpoint="https://accounts.zoho.com/oauth/v2/token",
+            refresh_token_endpoint="https://accounts.zoho.com/oauth/v2/token",
+        )
+
+        token = await client.get_access_token(authorization_code, redirect_uri)
+
+        if "error" in token:
+            return False, token
+        else:
+            return True, token
 
     def refresh_access_token(self, refresh_token):
         api_url = f'{self.accounts_server_url}/oauth/v2/token'
@@ -96,7 +124,7 @@ class ZohoAuth:
         else:
             raise Exception(f"unable to refresh access token due to {data}")
 
-    def get_access_token_if_not_exists(self):
+    def get_access_token_if_not_exists(self, authorization_code, redirect_uri):
         try:
             data = self.load_access_token()
         except Exception as e:
@@ -104,8 +132,12 @@ class ZohoAuth:
             data = None
 
         if data is None:
-            success, data = self.get_access_and_refresh_token()
+            # success, data = self.get_access_and_refresh_token(authorization_code=authorization_code)
+            success, data = asyncio.run(self.get_access_and_refresh_token_2(authorization_code=authorization_code,
+                                                                            redirect_uri=redirect_uri)
+                                        )
             if success:
+                print("storing access token...")
                 self.store_access_token(data)
             elif data == "invalid_code":
                 raise Exception(f"Unable to get access token. "
@@ -117,3 +149,25 @@ class ZohoAuth:
                 raise Exception(f"Unable to get access token. error: {data}")
 
         return data
+
+    def initiate_server_side_login_to_zoho(self):
+        print("start initiate_server_side_login_to_zoho")
+        return asyncio.run(self.server_side_authorization_request())
+
+    async def server_side_authorization_request(self):
+        print("start server_side_authorization_request")
+        client = OAuth2(
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            authorize_endpoint="https://accounts.zoho.com/oauth/v2/auth",
+            access_token_endpoint="https://accounts.zoho.com/oauth/v2/token",
+            refresh_token_endpoint="https://accounts.zoho.com/oauth/v2/token",
+        )
+
+        print("getting auth url...")
+
+        authorization_url = await client.get_authorization_url(
+            "http://127.0.0.1:8501", scope=["ZohoBooks.fullaccess.all"],
+        )
+
+        return authorization_url

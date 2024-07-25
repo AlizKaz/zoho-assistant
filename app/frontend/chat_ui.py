@@ -1,17 +1,53 @@
 import streamlit as st
 
-
-from backend import assistant
+from backend import assistant, zoho_auth
 from backend.init import AppInit
+from dotenv import load_dotenv
 
 st.title("Zoho Books Assistant")
 
 if "init_config" not in st.session_state:
+    load_dotenv()
     st.session_state.init_config = True
     app_init = AppInit()
-    app_init.init_app()
+    try:
+        app_init.init_app()
+    except Exception as e:
+        print(e)
+    st.session_state.app_init = app_init
     st.session_state.config = app_init.config
     st.session_state.messages = []
+
+
+def write_authorization_url():
+    print("getting auth url...")
+    return st.session_state.config.zoho_auth.initiate_server_side_login_to_zoho()
+
+
+def init_login():
+    print("getting auth url...")
+    authorization_url = write_authorization_url()
+    print(f"auth url: {authorization_url}")
+    # st.write(authorization_url)
+    st.markdown(f'<a href="{authorization_url}" target="_self">Proceed to Zoho Books Login</a>', unsafe_allow_html=True)
+
+
+if "authorization_code" not in st.session_state:
+    query_params = st.query_params
+    if 'code' in query_params:
+        code = query_params['code']
+        print(f"auth code: {code}")
+        st.session_state.authorization_code = code
+        access_token = st.session_state.config.get_access_token(st.session_state.authorization_code)
+        print(f"access_token:{access_token}")
+        st.session_state.access_token = access_token
+        if 'access_token' in st.session_state and st.session_state.access_token is not None:
+            st.subheader("You are successfully logged in Zoho Books")
+        else:
+            st.button("Login to Zoho Books", type="secondary", on_click=init_login)
+            st.subheader("You need to login")
+    else:
+        st.button("Login to Zoho Books", type="secondary", on_click=init_login)
 
 
 for message in st.session_state.messages:
