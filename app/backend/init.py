@@ -3,7 +3,6 @@ import os
 from http.client import HTTPConnection
 
 import requests
-from dotenv import load_dotenv
 from openai import OpenAI
 
 from backend import zoho_auth
@@ -44,7 +43,7 @@ class AppInit:
         self.config = None
 
     def init_app(self):
-        load_dotenv()
+        # load_dotenv()
         if os.environ.get("debug_request") == 'on':
             debug_requests_on()
             print_system_path()
@@ -74,17 +73,33 @@ class Config:
         self.zoho_auth = None
 
     def init_zoho_auth(self):
+        auth_store_location = os.environ.get("auth_store_location")
+        auth_store_filename_prefix = os.environ.get("auth_store_filename_prefix")
+        zoho_oauth_app_client_type = os.environ.get('zoho_app_client_type')
+        auth_store_filepath = f"{auth_store_location}/{auth_store_filename_prefix}_{zoho_oauth_app_client_type}.txt"
         self.zoho_auth = zoho_auth.ZohoAuth(
             client_id=os.environ.get("zoho_client_id"),
             client_secret=os.environ.get("zoho_client_secret"),
-            authorization_code=os.environ.get("zoho_authorization_code"),
-            auth_store_filepath=os.environ.get("auth_store_filepath"),
-            accounts_server_url=os.environ.get('zoho_accounts_server_url'))
+            auth_store_filepath=auth_store_filepath,
+            accounts_server_url=os.environ.get('zoho_accounts_server_url'),
+            client_type=zoho_oauth_app_client_type)
+
+    def get_access_token(self, authorization_code):
+        if self.zoho_auth.client_type == "Self-Client":
+            authorization_code = os.environ.get("zoho_authorization_code")
+            print(f"trying to get access token with auth_code:{authorization_code}")
+            access_token = self.zoho_auth.get_access_token_if_not_exists(authorization_code)['access_token']
+            return access_token
+        else:
+            access_token = self.zoho_auth.get_access_token_if_not_exists(authorization_code)['access_token']
+            return access_token
+
+    def init_zoho_services(self, access_token):
+        if access_token is None:
+            raise Exception("please login first")
 
         session = requests.session()
         session.hooks['response'].append(auth_hook_factory(zoho_auth=self.zoho_auth, session=session))
-
-        access_token = self.zoho_auth.get_access_token_if_not_exists()['access_token']
 
         self.invoice = zoho.Invoice(os.environ.get("zoho_books_api_server_url"), access_token, session)
 
