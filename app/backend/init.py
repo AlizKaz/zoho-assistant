@@ -77,21 +77,26 @@ class Config:
         auth_store_filename_prefix = os.environ.get("auth_store_filename_prefix")
         zoho_oauth_app_client_type = os.environ.get('zoho_app_client_type')
         auth_store_filepath = f"{auth_store_location}/{auth_store_filename_prefix}_{zoho_oauth_app_client_type}.txt"
+        redirect_uri = None
+        if os.environ.get("redirect_uri"):
+            redirect_uri = os.environ.get("redirect_uri")
         self.zoho_auth = zoho_auth.ZohoAuth(
             client_id=os.environ.get("zoho_client_id"),
             client_secret=os.environ.get("zoho_client_secret"),
             auth_store_filepath=auth_store_filepath,
             accounts_server_url=os.environ.get('zoho_accounts_server_url'),
-            client_type=zoho_oauth_app_client_type)
+            client_type=zoho_oauth_app_client_type,
+            redirect_uri=redirect_uri)
 
-    def get_access_token(self, authorization_code):
+    def get_access_token(self, authorization_code, redirect_uri=None):
         if self.zoho_auth.client_type == "Self-Client":
             authorization_code = os.environ.get("zoho_authorization_code")
             print(f"trying to get access token with auth_code:{authorization_code}")
             access_token = self.zoho_auth.get_access_token_if_not_exists(authorization_code)['access_token']
             return access_token
         else:
-            access_token = self.zoho_auth.get_access_token_if_not_exists(authorization_code)['access_token']
+            access_token = self.zoho_auth.get_access_token_if_not_exists(authorization_code,
+                                                                         redirect_uri=redirect_uri)['access_token']
             return access_token
 
     def init_zoho_services(self, access_token):

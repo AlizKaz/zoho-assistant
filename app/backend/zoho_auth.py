@@ -7,7 +7,8 @@ from httpx_oauth.oauth2 import OAuth2
 
 
 class ZohoAuth:
-    def __init__(self, client_id, client_secret, auth_store_filepath, accounts_server_url, client_type):
+    def __init__(self, client_id, client_secret, auth_store_filepath, accounts_server_url, client_type,
+                 redirect_uri=None):
         self.client_id = client_id
         self.client_secret = client_secret
         self.accounts_server_url = accounts_server_url
@@ -16,6 +17,7 @@ class ZohoAuth:
             raise Exception(f'invalid value set for client_type: ${self.client_type}. valid values: ["Self Client", '
                             f'"Server-base Application"]')
         self.auth_store_filepath = auth_store_filepath
+        self.redirect_uri = redirect_uri
 
     def get_access_and_refresh_token(self, authorization_code):
         print("getting access and refresh token")
@@ -122,7 +124,7 @@ class ZohoAuth:
         else:
             raise Exception(f"unable to refresh access token due to {data}")
 
-    def get_access_token_if_not_exists(self, authorization_code):
+    def get_access_token_if_not_exists(self, authorization_code, redirect_uri):
         try:
             data = self.load_access_token()
         except Exception as e:
@@ -132,7 +134,7 @@ class ZohoAuth:
         if data is None:
             # success, data = self.get_access_and_refresh_token(authorization_code=authorization_code)
             success, data = asyncio.run(self.get_access_and_refresh_token_2(authorization_code=authorization_code,
-                                                                            redirect_uri="http://127.0.0.1:8501")
+                                                                            redirect_uri=redirect_uri)
                                         )
             if success:
                 print("storing access token...")
