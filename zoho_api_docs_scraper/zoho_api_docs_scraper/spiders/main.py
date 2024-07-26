@@ -28,10 +28,13 @@ class ZohoAPIDocsSpider(scrapy.Spider):
             for property_element in arguments_element.css("div.row"):
                 argument_name = property_element.css("div.property ::text").get()
                 argument_data_type = property_element.css("div.property-datatype ::text").get()
-                print(f"---- argument_name: {argument_name}")
+                argument_kind = property_element.css("div.row div.property-kind::attr('id')").get()
+                argument_description = property_element.css("div.prop-descrip ::text").get()
                 argument = {
                     'name': argument_name.strip() if argument_name is not None else '',
-                    'data_type': argument_data_type.strip() if argument_data_type is not None else ''
+                    'data_type': argument_data_type.strip() if argument_data_type is not None else '',
+                    'required': argument_kind,
+                    'description': argument_description,
                 }
                 arguments.append(argument)
 
