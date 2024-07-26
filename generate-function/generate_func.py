@@ -67,7 +67,7 @@ def func_to_tool(func):
 
     return {"type": "function",
             "function": {
-                "name": func['name'],
+                "name": func['name'].lower().replace(" ", "_"),
                 "description": func['description'],
                 "parameters": parameters,
                 "required": required,
