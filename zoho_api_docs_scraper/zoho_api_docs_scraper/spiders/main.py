@@ -26,9 +26,12 @@ class ZohoAPIDocsSpider(scrapy.Spider):
 
             arguments = []
             for property_element in arguments_element.css("div.row"):
-                name = property_element.css("div.property ::text").get()
+                argument_name = property_element.css("div.property ::text").get()
+                argument_data_type = property_element.css("div.property-datatype ::text").get()
+                print(f"---- argument_name: {argument_name}")
                 argument = {
-                    'name': name.strip if name is not None else ''
+                    'name': argument_name.strip() if argument_name is not None else '',
+                    'data_type': argument_data_type.strip() if argument_data_type is not None else ''
                 }
                 arguments.append(argument)
 
@@ -47,3 +50,5 @@ class ZohoAPIDocsSpider(scrapy.Spider):
 
 # response.css("h2::text").getall() : list of apis
 #  response.css("div.wrapper h2 ~ h3#arguments ~ div.parameter").css("div.row").css("div.property ::text").getall()
+# scrapy crawl zoho_api_docs -O apis.json
+# scrapy shell 'https://www.zoho.com/books/api/v3/invoices/#create-an-invoice'
