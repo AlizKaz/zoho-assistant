@@ -20,6 +20,7 @@ class ZohoAPIDocsSpider(scrapy.Spider):
             h2_element = api.css("h2")
             description_element = api.css("h2 ~ p")
             arguments_element = api.css("h2 ~ h3#arguments ~ div.parameter")
+            query_param_element = api.css("h2 ~h3#queryparams ~ div.parameter")
 
             name = h2_element.css("::text").get()
             api_description = description_element.css("::text").get()
@@ -38,11 +39,26 @@ class ZohoAPIDocsSpider(scrapy.Spider):
                 }
                 arguments.append(argument)
 
+            query_params = []
+            for property_element in query_param_element.css("div.row"):
+                param_name = property_element.css("div.property ::text").get()
+                param_data_type = property_element.css("div.property-datatype ::text").get()
+                param_kind = property_element.css("div.row div.property-kind::attr('id')").get()
+                param_description = property_element.css("div.prop-descrip ::text").get()
+                param = {
+                    'name': param_name.strip() if param_name is not None else '',
+                    'data_type': param_data_type.strip() if param_data_type is not None else '',
+                    'required': param_kind,
+                    'description': param_description,
+                }
+                query_params.append(param)
+
             if name is not None:
                 yield {
                     "name": name.strip(),
                     "description": api_description.strip(),
                     "arguments": arguments,
+                    "query_params": query_params,
                 }
 
     def parse_old(self, response):
