@@ -11,12 +11,15 @@ if "init_config" not in st.session_state:
     st.session_state.init_config = True
     app_init = AppInit()
     try:
+        print("init app...")
         app_init.init_app()
+        st.session_state.app_init = app_init
+        st.session_state.config = app_init.config
+        st.session_state.messages = []
     except Exception as e:
+        del st.session_state["init_config"]
+        print("unable to init app")
         print(e)
-    st.session_state.app_init = app_init
-    st.session_state.config = app_init.config
-    st.session_state.messages = []
 
 
 def write_authorization_url():
@@ -34,8 +37,10 @@ def init_login():
 
 def after_init(st):
     if "authorization_code" not in st.session_state:
+        print("auth code not found in session_state")
         query_params = st.query_params
         if 'code' in query_params:
+            print("auth code found in query params params")
             code = query_params['code']
             print(f"auth code: {code}")
             st.session_state.authorization_code = code
