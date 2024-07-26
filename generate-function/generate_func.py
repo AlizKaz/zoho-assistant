@@ -85,8 +85,10 @@ def generate_tools():
     for func in funcs:
         tool = func_to_tool(func)
         tools.append(tool)
-        print(tool)
-        print("\n")
+        # print(tool)
+        # print("\n")
+    # print(tools)
+    print(json.dumps(tools, indent=4))
     return tools
 
 
