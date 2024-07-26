@@ -31,12 +31,15 @@ class ZohoAPIDocsSpider(scrapy.Spider):
                 argument_data_type = property_element.css("div.property-datatype ::text").get()
                 argument_kind = property_element.css("div.row div.property-kind::attr('id')").get()
                 argument_description = property_element.css("div.prop-descrip ::text").get()
+                availability_info = property_element.css("*.availability-info-wrapper span ::text").get()
                 argument = {
                     'name': argument_name.strip() if argument_name is not None else '',
                     'data_type': argument_data_type.strip() if argument_data_type is not None else '',
                     'required': argument_kind,
                     'description': argument_description,
                 }
+                if availability_info is not None:
+                    argument['availability_info'] = availability_info.strip()
                 arguments.append(argument)
 
             query_params = []
