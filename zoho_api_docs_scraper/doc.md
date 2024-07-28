@@ -1,0 +1,3 @@
+- response.css("div.wrapper h2::text").getall()
+  - all api names
+- 
