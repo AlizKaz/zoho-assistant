@@ -27,8 +27,8 @@ class ZohoAPIDocsSpider(scrapy.Spider):
 
             arguments = []
             for property_element in arguments_element.css("div.row"):
-                sub_attribute = False if len(property_element.xpath('ancestor::details').getall()) == 0 else True
-                if sub_attribute:
+                is_sub_attribute = False if len(property_element.xpath('ancestor::details').getall()) == 0 else True
+                if is_sub_attribute:
                     continue
                 argument_name = property_element.css("div.property ::text").get()
                 argument_name = argument_name.strip() if argument_name is not None else ''
@@ -45,6 +45,24 @@ class ZohoAPIDocsSpider(scrapy.Spider):
                 }
                 if availability_info is not None:
                     argument['availability_info'] = availability_info.strip()
+
+                sub_attributes = []
+                sub_attribute_elements = property_element.css("details div.attribute-wrapper div.attribute "
+                                                              "div.property-wrapper")
+                for sub_attribute_element in sub_attribute_elements:
+                    sub_attribute = {
+                        'name': sub_attribute_element.css("div.property ::text").get().strip(),
+                        'data_type': sub_attribute_element.css("div.property-datatype ::text").get().strip(),
+                        'required': sub_attribute_element.css("div.property-kind::attr('id')").get().strip(),
+                    }
+                    if len(sub_attribute_element.css("div.prop-descrip").getall()) > 0:
+                        sub_attribute['description'] = sub_attribute_element.css("div.prop-descrip ::text").get().strip()
+                    else:
+                        sub_attribute['description'] = ""
+
+                    sub_attributes.append(sub_attribute)
+                if len(sub_attributes) > 0:
+                    argument['sub_attributes'] = sub_attributes
 
                 arguments.append(argument)
 
