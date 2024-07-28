@@ -27,6 +27,9 @@ class ZohoAPIDocsSpider(scrapy.Spider):
 
             arguments = []
             for property_element in arguments_element.css("div.row"):
+                sub_attribute = False if len(property_element.xpath('ancestor::details').getall()) == 0 else True
+                if sub_attribute:
+                    continue
                 argument_name = property_element.css("div.property ::text").get()
                 argument_name = argument_name.strip() if argument_name is not None else ''
                 argument_data_type = property_element.css("div.property-datatype ::text").get()
