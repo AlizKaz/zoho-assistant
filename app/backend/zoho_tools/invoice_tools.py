@@ -161,7 +161,7 @@ create_an_invoice = {
     "function":
         {
             "name": "create_invoice",
-            "description": "Create an invoice for your customer.",
+            "description": "Create an invoice for a customer.",
             "parameters": {
                 "type": "object",
                 "properties": {
