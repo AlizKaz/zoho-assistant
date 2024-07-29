@@ -87,6 +87,13 @@ def func_to_tool(func):
         properties[argument['name']] = {'type': argument['data_type'],
                                         'description': argument["description"] if argument['description'] is not None
                                         else 'no description provided'}
+        if "sub_attributes" in argument:
+            properties[argument["name"]] = {}
+            for sub_attr in argument["sub_attributes"]:
+                properties[argument["name"]][sub_attr["name"]] = {'type': sub_attr["data_type"],
+                                                                  'description': sub_attr["description"] if sub_attr["description"] is not None
+                                                                  else "no description provided"}
+
         if argument['required'].lower() == 'required':
             required.append(argument['name'])
 
