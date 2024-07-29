@@ -81,50 +81,21 @@ def generate_func():
 
 
 def func_to_tool(func):
-    """
-    {
-            "type": "function",
-            "function": {
-                "name": "book_tennis_court",
-                "description": "book a tennis court with a partner at a specified data and time",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "partner_name": {
-                            "type": "string",
-                            "description": "Name of the partner",
-                        },
-                        "date": {
-                            "type": "string",
-                            # "enum": ["celsius", "fahrenheit"],
-                            "description": "The date that we are going to play",
-                        },
-                        "time": {
-                            "type": "string",
-                            # "enum": ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM",
-                            #          "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM"],
-                            "description": "The time that we are going to play. formatted as HH:MM:SS",
-                        }
-                    },
-                    "required": ["partner_name", "date", "time"],
-                },
-            }
-        }
-    """
-
-    parameters = {}
+    properties = {}
     required = []
     for argument in func['arguments']:
-        parameters[argument['name']] = {'type': argument['data_type'],
+        properties[argument['name']] = {'type': argument['data_type'],
                                         'description': argument["description"] if argument['description'] is not None
                                         else 'no description provided'}
         if argument['required'].lower() == 'required':
             required.append(argument['name'])
 
+    parameters = {'type': 'object', 'properties': properties, 'required': required}
+
     return {"type": "function",
             "function": {
                 "name": func['name'].lower().replace(" ", "_"),
-                "description": func['description'] if 'description' in func else "no desription provided",
+                "description": func['description'] if 'description' in func else "no description provided",
                 "parameters": parameters,
                 "required": required,
             }}
