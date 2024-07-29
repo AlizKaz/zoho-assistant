@@ -115,14 +115,16 @@ def func_to_tool(func):
     parameters = {}
     required = []
     for argument in func['arguments']:
-        parameters[argument['name']] = {'type': argument['data_type'], 'description': argument["description"]}
+        parameters[argument['name']] = {'type': argument['data_type'],
+                                        'description': argument["description"] if argument['description'] is not None
+                                        else 'no description provided'}
         if argument['required'].lower() == 'required':
             required.append(argument['name'])
 
     return {"type": "function",
             "function": {
                 "name": func['name'].lower().replace(" ", "_"),
-                "description": func['description'],
+                "description": func['description'] if 'description' in func else "no desription provided",
                 "parameters": parameters,
                 "required": required,
             }}
@@ -143,9 +145,15 @@ def generate_tools():
         # print("\n")
     # print(tools)
     print(json.dumps(tools, indent=4))
+
+    with open("invoice_tools.py", "w") as text_file:
+        text_file.write("tools = ")
+        json.dump(tools, text_file, indent=4)
+        text_file.write("\n")
+
     return tools
 
 
-generate_func()
+# generate_func()
 
-# generate_tools()
+generate_tools()
