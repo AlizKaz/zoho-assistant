@@ -53,6 +53,9 @@ def generate_func():
 
     funcs = json.load(f)
 
+    for func in funcs:
+        func['name'] = func['name'].replace('&', 'and').replace('.', '')
+
     print(f"function count: {len(funcs)}")
     for func in funcs:
         func_string = func_to_string(func)
