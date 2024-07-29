@@ -9,18 +9,27 @@ def func_to_string(func):
     for argument in func['arguments']:
         argument_description = f'name:{argument["name"]}, type:{argument["data_type"]}, ' \
                                f'required:{argument["required"]}. description:{argument["description"]}'
+
         argument_descriptions += "\t\t" + argument_description + "\n"
+        if "sub_attributes" in argument:
+            argument_descriptions += "\t\t\tsub attributes:" + "\n"
+            for sub in argument['sub_attributes']:
+                sub_attr_description = f'name:{sub["name"]}, type:{sub["data_type"]}, ' \
+                                       f'required:{sub["required"]}. description:{sub["description"]}'
+
+                argument_descriptions += f'\t\t\t{sub_attr_description}' + "\n"
+
     docs = f'\t\t"""{func["description"]}\n{argument_descriptions}\t\t"""'
     func_body = f"\t\tapi_url = self.zoho_books_api + \'/{func['api_address']}\'\n" \
-        "\t\tdefault_params = {\n"\
-        "\t\t}\n"\
-        "\n"\
-        "\t\tdefault_params.update(kwargs)\n" \
-        "\t\theaders = {\n"\
-        "\t\t\t'Authorization': f'Zoho-oauthtoken {self.access_token}'\n"\
-        "\t\t}\n" \
-        "\n" \
-        "\t\treturn self.zoho_get_api_call(api_url, default_params, headers, 'invoices')\n"
+                "\t\tdefault_params = {\n" \
+                "\t\t}\n" \
+                "\n" \
+                "\t\tdefault_params.update(kwargs)\n" \
+                "\t\theaders = {\n" \
+                "\t\t\t'Authorization': f'Zoho-oauthtoken {self.access_token}'\n" \
+                "\t\t}\n" \
+                "\n" \
+                "\t\treturn self.zoho_get_api_call(api_url, default_params, headers, 'invoices')\n"
     func = f"{definition_line}\n{docs}\n{func_body}"
     return func
 
