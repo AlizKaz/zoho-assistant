@@ -1,16 +1,16 @@
 import json
 
-from app.backend.gpt import gpt_service
+from backend.gpt import gpt_service
 
 
-def get_response(client, system_message, messages, tools, gpt_model):
+def get_response(client, system_message, messages, tools, model):
     chat_response = gpt_service.chat_completion_request(
         client=client,
         system_message=system_message,
         messages=[
             {"role": m["role"], "content": m["content"]}
             for m in messages
-        ], tools=tools, tool_choice="auto", model=gpt_model
+        ], tools=tools, tool_choice="auto", model=model
     )
     response = chat_response.choices[0].message
 
@@ -18,7 +18,7 @@ def get_response(client, system_message, messages, tools, gpt_model):
         result = response.content
         return result
     elif response.tool_calls:
-        print_function(response)
+        return print_function(response)
         # return zoho_books_service.process_gpt_tool_call(response)
     else:
         return "unable to process the chat"
@@ -38,3 +38,4 @@ def print_function(response):
     function_call += ")"
     print(f"function_call : {function_call}")
 
+    return function_call

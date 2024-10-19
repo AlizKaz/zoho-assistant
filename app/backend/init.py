@@ -6,8 +6,9 @@ import requests
 from dotenv import load_dotenv
 from openai import OpenAI
 
-import zoho_auth
-from app.backend import zoho
+from backend import zoho_auth
+from backend import zoho
+from backend.zoho_tools import invoice_tools
 
 
 def debug_requests_on():
@@ -33,6 +34,7 @@ def auth_hook_factory(*factory_args, **factory_kwargs):
             response.request.headers['Authorization'] = f'Zoho-oauthtoken {new_access_token}'
             # Retry original request
             return session.send(response.request)
+
     return auth_hook
 
 
@@ -45,15 +47,28 @@ class AppInit:
         load_dotenv()
         if os.environ.get("debug_request") == 'on':
             debug_requests_on()
+            print_system_path()
 
         self.config = Config()
         self.config.init_zoho_auth()
         self.config.init_openai_client()
+        self.config.init_gpt_properties()
+
+    @staticmethod
+    def print_system_path(self):
+        import sys
+        type(sys.path)
+
+        print("all paths in sys.path")
+        for path in sys.path:
+            print(path)
+        print("---------")
 
 
 class Config:
     def __init__(self):
         self.openai_client = None
+        self.gpt = None
         self.invoice = None
         self.accounts_server_url = None
         self.zoho_auth = None
@@ -83,3 +98,18 @@ class Config:
         else:
             return self.openai_client
 
+    def init_gpt_properties(self):
+        if self.gpt is None:
+            self.gpt = {'system_message': "", 'tools': self.get_tools(),
+                        'gpt_model': os.environ.get('zoho_assistant_openai_model')}
+        else:
+            return self.gpt
+
+    @staticmethod
+    def get_tools():
+        tools = [
+            invoice_tools.search_invoices,
+            invoice_tools.create_an_invoice
+        ]
+
+        return tools
