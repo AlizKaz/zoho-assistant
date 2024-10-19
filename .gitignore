@@ -163,4 +163,5 @@ cython_debug/
 
 zoho
 logs
-./app/streamlit.settings
+app/streamlit.settings
+*.env*
