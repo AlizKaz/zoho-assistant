@@ -1,46 +1,49 @@
-import os
+class Invoice:
+    def __init__(self, zoho_books_api, access_token, session):
+        self.access_token = access_token
+        self.zoho_books_api = zoho_books_api
+        self.session = session
 
-import requests
+    def list_invoices(self, params):
+        api_url = self.zoho_books_api + "/invoices"
 
-from app.backend import zoho_auth
+        default_params = {
+        }
 
-auth_data = zoho_auth.auth_data
-access_token = auth_data['access_token']
+        default_params.update(params)
+        headers = {
+            'Authorization': f'Zoho-oauthtoken {self.access_token}'
+        }
 
+        return self.zoho_get_api_call(api_url, default_params, headers, 'invoices')
 
-def auth_hook(response, *args, **kwargs):
-    if response.status_code == 401:
-        print(f'getting 401 response code. trying to refresh access token')
-        # Refresh token
-        new_access_token = zoho_auth.refresh_and_save_access_token()
-        # Update session headers with new token
-        response.request.headers['Authorization'] = f'Zoho-oauthtoken {new_access_token}'
-        # Retry original request
-        return session.send(response.request)
+    def create_invoice(self, params):
+        api_url = self.zoho_books_api + "/invoices"
 
+        default_params = {
 
-session = requests.Session()
-session.hooks['response'].append(auth_hook)
+        }
+        default_params.update(params)
 
+        headers = {
+            'Authorization': f'Zoho-oauthtoken {self.access_token}',
+            'content-type': 'application/json',
+        }
 
-def list_invoices(access_token, params):
-    api_url = os.environ.get('zoho_books_api') + "/invoices"
+        return self.zoho_post_api_call(api_url, default_params, headers, 'invoice')
 
-    default_params = {
-    }
+    def zoho_post_api_call(self, api_url, payload, headers, data_key_name_in_response):
+        print(api_url)
+        r = self.session.post(api_url, json=payload, headers=headers)
+        if r.json()['code'] == 0:
+            return True, r.json()[data_key_name_in_response], None
+        else:
+            return False, None, r.json()
 
-    default_params.update(params)
-
-    headers = {
-        'Authorization': f'Zoho-oauthtoken {access_token}'
-    }
-
-    return zoho_get_api_call(api_url, default_params, headers)
-
-
-def zoho_get_api_call(api_url, params, headers):
-    r = session.get(api_url, params=params, headers=headers)
-    if r.json()['message'] == 'success':
-        return True, r.json()['invoices'], None
-    else:
-        return False, None, r.json()
+    def zoho_get_api_call(self, api_url, params, headers, data_key_name_in_response):
+        print(api_url)
+        r = self.session.get(api_url, params=params, headers=headers)
+        if r.json()['code'] == 0:
+            return True, r.json()[data_key_name_in_response], None
+        else:
+            return False, None, r.json()
