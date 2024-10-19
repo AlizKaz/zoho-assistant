@@ -6,11 +6,6 @@ name = "pypi"
 [packages]
 
 [dev-packages]
-Scrapy = "*"
-automat = "22.10.0"
-hyperlink = "21.0.0"
-requests-file = "2.1.0"
-
 
 [requires]
 python_version = "3.11"
