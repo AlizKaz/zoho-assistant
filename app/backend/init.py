@@ -4,6 +4,8 @@ from http.client import HTTPConnection
 
 import requests
 from dotenv import load_dotenv
+from openai import OpenAI
+
 import zoho_auth
 from app.backend import zoho
 
@@ -46,10 +48,12 @@ class AppInit:
 
         self.config = Config()
         self.config.init_zoho_auth()
+        self.config.init_openai_client()
 
 
 class Config:
     def __init__(self):
+        self.openai_client = None
         self.invoice = None
         self.accounts_server_url = None
         self.zoho_auth = None
@@ -68,3 +72,14 @@ class Config:
         access_token = self.zoho_auth.get_access_token_if_not_exists()['access_token']
 
         self.invoice = zoho.Invoice(os.environ.get("zoho_books_api_server_url"), access_token, session)
+
+    def init_openai_client(self):
+        if self.openai_client is None:
+            # Define OpenAI api_key
+            api_key = os.environ.get('OPENAI_API_KEY_ZOHO_ASSISTANT_PROJECT')
+            client = OpenAI(api_key=api_key)
+            self.openai_client = client
+            return self.openai_client
+        else:
+            return self.openai_client
+
