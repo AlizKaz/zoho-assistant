@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 openai = "1.30.5"
 tenacity = "8.3.0"
-streamlit = "1.35.0"
+streamlit = "1.39.0"
 pytz = "2024.1"
 python-dotenv= "1.0.1"
 httpx-oauth = "v0.15.0"

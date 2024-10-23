@@ -88,15 +88,15 @@ class Config:
             client_type=zoho_oauth_app_client_type,
             redirect_uri=redirect_uri)
 
-    def get_access_token(self, authorization_code, redirect_uri=None):
+    def get_access_token(self, authorization_code):
+        print(f"getting access token with client_type:{self.zoho_auth.client_type}")
         if self.zoho_auth.client_type == "Self-Client":
             authorization_code = os.environ.get("zoho_authorization_code")
             print(f"trying to get access token with auth_code:{authorization_code}")
             access_token = self.zoho_auth.get_access_token_if_not_exists(authorization_code)['access_token']
             return access_token
         else:
-            access_token = self.zoho_auth.get_access_token_if_not_exists(authorization_code,
-                                                                         redirect_uri=redirect_uri)['access_token']
+            access_token = self.zoho_auth.get_access_token_if_not_exists(authorization_code)['access_token']
             return access_token
 
     def init_zoho_services(self, access_token):
@@ -131,5 +131,8 @@ class Config:
             invoice_tools.search_invoices,
             invoice_tools.create_an_invoice
         ]
+
+        from backend.zoho_tools import invoice_tools_2
+        tools = invoice_tools_2.tools
 
         return tools
