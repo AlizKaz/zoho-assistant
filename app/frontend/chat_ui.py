@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 st.title("Zoho Books Assistant")
 
 if "init_config" not in st.session_state:
+    print("app not inited yet")
     load_dotenv()
     st.session_state.init_config = True
     app_init = AppInit()
@@ -20,6 +21,8 @@ if "init_config" not in st.session_state:
         del st.session_state["init_config"]
         print("unable to init app")
         print(e)
+else:
+    print("app inited successfully")
 
 
 def write_authorization_url():
@@ -80,4 +83,5 @@ def after_init(st):
 
 
 if "init_config" in st.session_state:
+    print("init_config found in session state. calling after_init")
     after_init(st)

@@ -18,6 +18,9 @@ class ZohoAuth:
                             f'"Server-base Application"]')
         self.auth_store_filepath = auth_store_filepath
         self.redirect_uri = redirect_uri
+        if self.client_type == "Server-base Application" and self.redirect_uri is None:
+            raise Exception(
+                f"redirect_uri must be a valid url for Server-base App Authorization. redirect_uri:{self.redirect_uri}")
 
     def get_access_and_refresh_token(self, authorization_code):
         print("getting access and refresh token")
@@ -124,7 +127,7 @@ class ZohoAuth:
         else:
             raise Exception(f"unable to refresh access token due to {data}")
 
-    def get_access_token_if_not_exists(self, authorization_code, redirect_uri):
+    def get_access_token_if_not_exists(self, authorization_code):
         try:
             data = self.load_access_token()
         except Exception as e:
@@ -132,12 +135,19 @@ class ZohoAuth:
             data = None
 
         if data is None:
-            # success, data = self.get_access_and_refresh_token(authorization_code=authorization_code)
-            success, data = asyncio.run(self.get_access_and_refresh_token_2(authorization_code=authorization_code,
-                                                                            redirect_uri=redirect_uri)
-                                        )
+            if self.client_type == "Self-Client":
+                success, data = self.get_access_and_refresh_token(authorization_code=authorization_code)
+            elif self.client_type == "Server-base Application":
+                success, data = asyncio.run(self.get_access_and_refresh_token_2(authorization_code=authorization_code,
+                                                                                redirect_uri=self.redirect_uri)
+                                            )
+            else:
+                raise Exception(f"invalid client type. client_type:{self.client_type}")
+
             if success:
-                print("storing access token...")
+                # todo: data currently does not contain refresh_token. I guess that's because I'm not sending
+                #  grant_type=authorization_code. There's no way that I can pass this grant type with httpx_auth library
+                print(f"storing access token... data:{data}")
                 self.store_access_token(data)
             elif data == "invalid_code":
                 raise Exception(f"Unable to get access token. "
