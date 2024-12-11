@@ -19,8 +19,8 @@ class ZohoAPIDocsSpider(scrapy.Spider):
             print(f"api: {api}")
             h2_element = api.css("h2")
             description_element = api.css("h2 ~ p")
-            arguments_element = api.css("h2 ~ h3#arguments ~ div.parameter")
-            query_param_element = api.css("h2 ~h3#queryparams ~ div.parameter")
+            arguments_element = api.css("h2 ~ h3#arguments + div.parameter")
+            query_param_element = api.css("h2 ~ h3#queryparams + div.parameter")
 
             name = h2_element.css("::text").get()
             api_description = description_element.css("::text").get()
@@ -90,7 +90,7 @@ class ZohoAPIDocsSpider(scrapy.Spider):
                 param_description = property_element.css("div.prop-descrip ::text").get()
                 param = {
                     'name': param_name.strip() if param_name is not None else '',
-                    'data_type': param_data_type.strip() if param_data_type is not None else '',
+                    'data_type': 'string',
                     'required': param_kind,
                     'description': param_description,
                 }
