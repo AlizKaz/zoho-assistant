@@ -80,33 +80,103 @@ def generate_func():
         text_file.write(class_string)
 
 
+def get_json_schema_type(data_type, **kwargs):
+    if data_type == "string":
+        return "string"
+    elif data_type == "integer" or data_type == "long":
+        return "integer"
+    elif data_type == "float" or data_type == "double":
+        return "number"
+    elif data_type == "array":
+        return "array"
+    elif data_type == "boolean":
+        return "boolean"
+    elif data_type == "object":
+        return "object"
+    else:
+        raise Exception(f"unknown datatype: {data_type}, name:{kwargs.get('name')}")
+
+
 def func_to_tool(func):
     properties = {}
     required = []
+
     for argument in func['arguments']:
-        properties[argument['name']] = {'type': argument['data_type'],
-                                        'description': argument["description"] if argument['description'] is not None
-                                        else 'no description provided'}
-        if "sub_attributes" in argument:
-            properties[argument["name"]] = {}
-            for sub_attr in argument["sub_attributes"]:
-                properties[argument["name"]][sub_attr["name"]] = {'type': sub_attr["data_type"],
-                                                                  'description': sub_attr["description"] if sub_attr["description"] is not None
-                                                                  else "no description provided"}
+        property = get_property(argument)
+        properties.update(property)
 
         if argument['required'].lower() == 'required':
             required.append(argument['name'])
 
     parameters = {'type': 'object', 'properties': properties, 'required': required}
 
+    function_name = func['name']
+    # openai requires this
+    function_name = clean_function_name(function_name)
+    import re
+    if not re.match(r"^[a-zA-Z0-9_-]+$", function_name):
+        raise ValueError(f"Invalid characters in function_name: {function_name}")
+
+    json_schema_for_function = {
+        "name": function_name,
+        "description": func['description'] if 'description' in func else "no description provided",
+        "parameters": parameters,
+        "required": required,
+    }
+    from jsonschema import Draft7Validator, exceptions
+
+    try:
+        Draft7Validator.check_schema(json_schema_for_function)
+        print("Schema is valid!")
+    except exceptions.SchemaError as e:
+        print(f"Schema is invalid: {e.message}")
+
     return {"type": "function",
-            "function": {
-                "name": func['name'].lower().replace(" ", "_"),
-                "description": func['description'] if 'description' in func else "no description provided",
-                "parameters": parameters,
-                "required": required,
-            }}
+            "function": json_schema_for_function}
     pass
+
+
+def clean_function_name(function_name):
+    return (function_name
+            .strip()
+            .replace(" ", "_")
+            .replace("'", "_")
+            .replace(".", "_")
+            .replace("&", "and")
+            .lower())
+
+
+def get_property(argument):
+    json_schema_type = get_json_schema_type(argument['data_type'], name=argument['name'])
+    property = {argument['name']: {'type': json_schema_type, 'description': None}}
+    property_dict = property[argument['name']]
+    property_dict['type'] = json_schema_type
+    property_dict['description'] = argument["description"] if argument['description'] is not None \
+        else 'no description provided'
+    if json_schema_type == "array":
+        property_dict["items"] = {
+            "type": "string"
+        }
+
+        if "sub_attributes" in argument:
+            property_dict["items"] = {
+                "type": "object"
+            }
+            sub_property_dict = {}
+            for sub_attr in argument["sub_attributes"]:
+                sub_property = get_property(sub_attr)
+                sub_property_dict.update(sub_property)
+            property_dict["items"]["properties"] = sub_property_dict
+
+    elif json_schema_type == "object":
+        sub_property_dict = {}
+
+        if "sub_attributes" in argument:
+            for sub_attr in argument["sub_attributes"]:
+                sub_property = get_property(sub_attr)
+                sub_property_dict.update(sub_property)
+        property_dict["properties"] = sub_property_dict
+    return property
 
 
 def generate_tools():
@@ -132,6 +202,6 @@ def generate_tools():
     return tools
 
 
-# generate_func()
+generate_func()
 
 generate_tools()
