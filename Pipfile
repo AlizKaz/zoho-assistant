@@ -16,6 +16,7 @@ Scrapy = "*"
 automat = "22.10.0"
 hyperlink = "21.0.0"
 requests-file = "2.1.0"
+jsonschema = "4.23.0"
 
 
 [requires]
