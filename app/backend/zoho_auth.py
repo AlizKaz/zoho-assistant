@@ -176,8 +176,10 @@ class ZohoAuth:
 
         print("getting auth url...")
 
+        # todo: change this to read from env variable
+        redirect_uri = "http://127.0.0.1:8501" # read from the browser
         authorization_url = await client.get_authorization_url(
-            "http://127.0.0.1:8501", scope=["ZohoBooks.fullaccess.all"],
+            redirect_uri, scope=["ZohoBooks.fullaccess.all"],
         )
 
         return authorization_url
