@@ -71,6 +71,13 @@ class Config:
         self.invoice = None
         self.accounts_server_url = None
         self.zoho_auth = None
+        self.system_message = f"You are an assistant in helping me perform Zoho Invoicing Books API. " \
+                              "You are able to have a conversation or perform the tasks specified in the tools. " \
+                              "The user must specify if a task from one of the tools should be called, " \
+                              "not by AI guessing. " \
+                              "Please ask the user for follow up question if you are uncertain. " \
+                              "Don't make assumptions about what values to plug into functions. " \
+                              "Ask for clarification only if a user request is ambiguous."
 
     def init_zoho_auth(self):
         auth_store_location = os.environ.get("auth_store_location")
@@ -120,8 +127,13 @@ class Config:
 
     def init_gpt_properties(self):
         if self.gpt is None:
-            self.gpt = {'system_message': "", 'tools': self.get_tools(),
+            print(f"initiating gpt object ----------------")
+            print(f"system message: {self.system_message}")
+            print("****")
+            print(f"tools count: {len(self.get_tools())}")
+            self.gpt = {'system_message': self.system_message, 'tools': self.get_tools(),
                         'gpt_model': os.environ.get('zoho_assistant_openai_model')}
+            print(f"----------------")
         else:
             return self.gpt
 
