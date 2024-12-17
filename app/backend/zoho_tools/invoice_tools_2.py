@@ -394,11 +394,7 @@ tools = [
                         "type": "string",
                         "description": "Ignore auto invoice number generation for this invoice. This mandates the invoice number. Allowed values "
                     }
-                },
-                "required": [
-                    "customer_id",
-                    "line_items"
-                ]
+                }
             },
             "required": [
                 "customer_id",
@@ -782,11 +778,7 @@ tools = [
                         "type": "string",
                         "description": "The line item id"
                     }
-                },
-                "required": [
-                    "customer_id",
-                    "line_items"
-                ]
+                }
             },
             "required": [
                 "customer_id",
@@ -886,10 +878,8 @@ tools = [
                         "type": "string",
                         "description": "To get desired response format. There are 5 formats of responses: 0 (Includes all invoices), 1 (Includes all invoices, the number of invoices, and the sum of their total and balance amounts), 2 (Includes only the number of invoices), 3 (Includes the number of invoices and the sum of their total and balance amounts), and 4 (Includes all invoices and the sum of their total and balance amounts)."
                     }
-                },
-                "required": []
-            },
-            "required": []
+                }
+            }
         }
     },
     {
@@ -1272,11 +1262,7 @@ tools = [
                         "type": "string",
                         "description": "Ignore auto invoice number generation for this invoice. This mandates the invoice number. Allowed values "
                     }
-                },
-                "required": [
-                    "customer_id",
-                    "line_items"
-                ]
+                }
             },
             "required": [
                 "customer_id",
@@ -1300,10 +1286,8 @@ tools = [
                         "type": "string",
                         "description": "Get the details of a particular invoice in formats such as json/ pdf/ html. Default format is json. Allowed values "
                     }
-                },
-                "required": []
-            },
-            "required": []
+                }
+            }
         }
     },
     {
@@ -1313,10 +1297,8 @@ tools = [
             "description": "Delete an existing invoice. Invoices which have payment or credits note applied cannot be deleted.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1326,10 +1308,8 @@ tools = [
             "description": "Mark a draft invoice as sent.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1339,10 +1319,8 @@ tools = [
             "description": "Mark an invoice status as void. Upon voiding, the payments and credits associated with the invoices will be unassociated and will be under customer credits.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1352,10 +1330,8 @@ tools = [
             "description": "Mark a voided invoice as draft.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1381,11 +1357,7 @@ tools = [
                         "type": "string",
                         "description": "Comma separated invoice ids which are to be emailed."
                     }
-                },
-                "required": [
-                    "contact_id",
-                    "invoice_ids"
-                ]
+                }
             },
             "required": [
                 "contact_id",
@@ -1405,10 +1377,8 @@ tools = [
                         "type": "string",
                         "description": "ID of the salesorder"
                     }
-                },
-                "required": []
-            },
-            "required": []
+                }
+            }
         }
     },
     {
@@ -1418,10 +1388,8 @@ tools = [
             "description": "Submit an invoice for approval.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1431,10 +1399,8 @@ tools = [
             "description": "Approve an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1483,10 +1449,7 @@ tools = [
                         "type": "string",
                         "description": "Files to be attached to the email"
                     }
-                },
-                "required": [
-                    "to_mail_ids"
-                ]
+                }
             },
             "required": [
                 "to_mail_ids"
@@ -1505,10 +1468,8 @@ tools = [
                         "type": "string",
                         "description": "Get the email content based on a specific email template. If this param is not inputted, then the content will be based on the email template associated with the customer. If no template is associated with the customer, then default template will be used."
                     }
-                },
-                "required": []
-            },
-            "required": []
+                }
+            }
         }
     },
     {
@@ -1553,10 +1514,7 @@ tools = [
                         "type": "string",
                         "description": "Files to be attached to the email"
                     }
-                },
-                "required": [
-                    "cc_mail_ids"
-                ]
+                }
             },
             "required": [
                 "cc_mail_ids"
@@ -1570,10 +1528,8 @@ tools = [
             "description": "Get the mail content of the payment reminder.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1588,10 +1544,7 @@ tools = [
                         "type": "string",
                         "description": "Array of invoice ids for which the reminder has to be sent."
                     }
-                },
-                "required": [
-                    "invoice_ids"
-                ]
+                }
             },
             "required": [
                 "invoice_ids"
@@ -1610,10 +1563,7 @@ tools = [
                         "type": "string",
                         "description": "Comma separated invoice ids which are to be export as pdf."
                     }
-                },
-                "required": [
-                    "invoice_ids"
-                ]
+                }
             },
             "required": [
                 "invoice_ids"
@@ -1632,10 +1582,7 @@ tools = [
                         "type": "string",
                         "description": "Export invoices as pdf and print them. Maximum of 25 invoices can be printed."
                     }
-                },
-                "required": [
-                    "invoice_ids"
-                ]
+                }
             },
             "required": [
                 "invoice_ids"
@@ -1649,10 +1596,8 @@ tools = [
             "description": "Disable automated payment reminders for an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1662,10 +1607,8 @@ tools = [
             "description": "Enable automated payment reminders for an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1675,10 +1618,8 @@ tools = [
             "description": "Write off the invoice balance amount of an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1688,10 +1629,8 @@ tools = [
             "description": "Cancel the write off amount of an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1726,10 +1665,8 @@ tools = [
                         "type": "string",
                         "description": "Customer's fax number."
                     }
-                },
-                "required": []
-            },
-            "required": []
+                }
+            }
         }
     },
     {
@@ -1768,10 +1705,8 @@ tools = [
                         "type": "string",
                         "description": "Customer's fax number."
                     }
-                },
-                "required": []
-            },
-            "required": []
+                }
+            }
         }
     },
     {
@@ -1781,10 +1716,8 @@ tools = [
             "description": "Get all invoice pdf templates.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1794,10 +1727,8 @@ tools = [
             "description": "Update the pdf template associated with the invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1807,10 +1738,8 @@ tools = [
             "description": "Get the list of payments made for an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1820,10 +1749,8 @@ tools = [
             "description": "Get the list of credits applied for an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1868,11 +1795,7 @@ tools = [
                             }
                         }
                     }
-                },
-                "required": [
-                    "invoice_payments",
-                    "apply_creditnotes"
-                ]
+                }
             },
             "required": [
                 "invoice_payments",
@@ -1887,10 +1810,8 @@ tools = [
             "description": "Delete a payment made to an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1900,10 +1821,8 @@ tools = [
             "description": "Delete a particular credit applied to an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1922,10 +1841,8 @@ tools = [
                         "type": "string",
                         "description": "The file to be attached.Allowed Extensions: "
                     }
-                },
-                "required": []
-            },
-            "required": []
+                }
+            }
         }
     },
     {
@@ -1940,10 +1857,7 @@ tools = [
                         "type": "string",
                         "description": "Boolean to send the attachment with the invoice when emailed."
                     }
-                },
-                "required": [
-                    "can_send_in_mail"
-                ]
+                }
             },
             "required": [
                 "can_send_in_mail"
@@ -1962,10 +1876,8 @@ tools = [
                         "type": "string",
                         "description": "Get the thumbnail of the attachment."
                     }
-                },
-                "required": []
-            },
-            "required": []
+                }
+            }
         }
     },
     {
@@ -1975,10 +1887,8 @@ tools = [
             "description": "Delete the file attached to the invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -1988,10 +1898,8 @@ tools = [
             "description": "Delete the expense receipts attached to an invoice which is raised from an expense.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -2014,10 +1922,7 @@ tools = [
                         "type": "string",
                         "description": "ID of the organization"
                     }
-                },
-                "required": [
-                    "organization_id"
-                ]
+                }
             },
             "required": [
                 "organization_id"
@@ -2044,10 +1949,8 @@ tools = [
                         "type": "string",
                         "description": "Boolean to check if the comment to be shown to the clients"
                     }
-                },
-                "required": []
-            },
-            "required": []
+                }
+            }
         }
     },
     {
@@ -2057,10 +1960,8 @@ tools = [
             "description": "Get the complete history and comments of an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -2079,10 +1980,8 @@ tools = [
                         "type": "string",
                         "description": "Boolean to check if the comment to be shown to the clients"
                     }
-                },
-                "required": []
-            },
-            "required": []
+                }
+            }
         }
     },
     {
@@ -2092,10 +1991,8 @@ tools = [
             "description": "Delete an invoice comment.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
-            },
-            "required": []
+                "properties": {}
+            }
         }
     },
     {
@@ -2122,13 +2019,7 @@ tools = [
                         "type": "string",
                         "description": "The expiry time of the payment link. Supported format : "
                     }
-                },
-                "required": [
-                    "transaction_id",
-                    "transaction_type",
-                    "link_type",
-                    "expiry_time"
-                ]
+                }
             },
             "required": [
                 "transaction_id",
