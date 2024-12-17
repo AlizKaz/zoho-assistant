@@ -385,6 +385,14 @@ tools = [
                         "items": {
                             "type": "string"
                         }
+                    },
+                    "send": {
+                        "type": "string",
+                        "description": "Send the invoice to the contact person(s) associated with the invoice. Allowed values "
+                    },
+                    "ignore_auto_number_generation": {
+                        "type": "string",
+                        "description": "Ignore auto invoice number generation for this invoice. This mandates the invoice number. Allowed values "
                     }
                 },
                 "required": [
@@ -793,7 +801,92 @@ tools = [
             "description": "List all invoices with pagination.",
             "parameters": {
                 "type": "object",
-                "properties": {},
+                "properties": {
+                    "invoice_number": {
+                        "type": "string",
+                        "description": "Search invoices by invoice number.Variants: "
+                    },
+                    "item_name": {
+                        "type": "string",
+                        "description": "Search invoices by item name.Variants: "
+                    },
+                    "item_id": {
+                        "type": "string",
+                        "description": "Search invoices by item id."
+                    },
+                    "item_description": {
+                        "type": "string",
+                        "description": "Search invoices by item description.Variants: "
+                    },
+                    "reference_number": {
+                        "type": "string",
+                        "description": "The reference number of the invoice"
+                    },
+                    "customer_name": {
+                        "type": "string",
+                        "description": "The name of the customer. Max-length [100]"
+                    },
+                    "recurring_invoice_id": {
+                        "type": "string",
+                        "description": "ID of the recurring invoice from which the invoice is created."
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "Search contacts by email id. Max-length [100]"
+                    },
+                    "total": {
+                        "type": "string",
+                        "description": "The total amount to be paid"
+                    },
+                    "balance": {
+                        "type": "string",
+                        "description": "The unpaid amount"
+                    },
+                    "custom_field": {
+                        "type": "string",
+                        "description": "Search invoices by custom fields.Variants: "
+                    },
+                    "date": {
+                        "type": "string",
+                        "description": "Search invoices by invoice date. Default date format is yyyy-mm-dd."
+                    },
+                    "due_date": {
+                        "type": "string",
+                        "description": "Search invoices by due date. Default date format is yyyy-mm-dd. "
+                    },
+                    "last_modified_time": {
+                        "type": "string",
+                        "description": "This filters invoices generated after the last_modified_time that is greater than the specified param value. Allowed format "
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Search invoices by invoice status.Allowed Values: "
+                    },
+                    "customer_id": {
+                        "type": "string",
+                        "description": "ID of the customer the invoice has to be created."
+                    },
+                    "filter_by": {
+                        "type": "string",
+                        "description": "Filter invoices by any status or payment expected date.Allowed Values: "
+                    },
+                    "search_text": {
+                        "type": "string",
+                        "description": "Search invoices by invoice number or purchase order or customer name. Max-length [100]"
+                    },
+                    "sort_column": {
+                        "type": "string",
+                        "description": "Sort invoices.Allowed Values: "
+                    },
+                    "zcrm_potential_id": {
+                        "type": "string",
+                        "description": "Potential ID of a Deal in CRM."
+                    },
+                    "response_option": {
+                        "type": "string",
+                        "description": "To get desired response format. There are 5 formats of responses: 0 (Includes all invoices), 1 (Includes all invoices, the number of invoices, and the sum of their total and balance amounts), 2 (Includes only the number of invoices), 3 (Includes the number of invoices and the sum of their total and balance amounts), and 4 (Includes all invoices and the sum of their total and balance amounts)."
+                    }
+                },
                 "required": []
             },
             "required": []
@@ -1174,6 +1267,10 @@ tools = [
                     "line_item_id": {
                         "type": "string",
                         "description": "The line item id"
+                    },
+                    "ignore_auto_number_generation": {
+                        "type": "string",
+                        "description": "Ignore auto invoice number generation for this invoice. This mandates the invoice number. Allowed values "
                     }
                 },
                 "required": [
@@ -1194,7 +1291,16 @@ tools = [
             "description": "Get the details of an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
+                "properties": {
+                    "print": {
+                        "type": "string",
+                        "description": "Print the exported pdf."
+                    },
+                    "accept": {
+                        "type": "string",
+                        "description": "Get the details of a particular invoice in formats such as json/ pdf/ html. Default format is json. Allowed values "
+                    }
+                },
                 "required": []
             },
             "required": []
@@ -1270,14 +1376,20 @@ tools = [
                     "contact_id": {
                         "type": "string",
                         "description": "ID of the contact. Can specify if email or snail mail has to be sent for each contact."
+                    },
+                    "invoice_ids": {
+                        "type": "string",
+                        "description": "Comma separated invoice ids which are to be emailed."
                     }
                 },
                 "required": [
-                    "contact_id"
+                    "contact_id",
+                    "invoice_ids"
                 ]
             },
             "required": [
-                "contact_id"
+                "contact_id",
+                "invoice_ids"
             ]
         }
     },
@@ -1358,6 +1470,18 @@ tools = [
                     "body": {
                         "type": "string",
                         "description": "The body of the mail"
+                    },
+                    "send_customer_statement": {
+                        "type": "string",
+                        "description": "Send customer statement pdf a with email."
+                    },
+                    "send_attachment": {
+                        "type": "string",
+                        "description": "Send the invoice attachment a with the email."
+                    },
+                    "attachments": {
+                        "type": "string",
+                        "description": "Files to be attached to the email"
                     }
                 },
                 "required": [
@@ -1376,7 +1500,12 @@ tools = [
             "description": "Get the email content of an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
+                "properties": {
+                    "email_template_id": {
+                        "type": "string",
+                        "description": "Get the email content based on a specific email template. If this param is not inputted, then the content will be based on the email template associated with the customer. If no template is associated with the customer, then default template will be used."
+                    }
+                },
                 "required": []
             },
             "required": []
@@ -1415,6 +1544,14 @@ tools = [
                     "send_from_org_email_id": {
                         "type": "boolean",
                         "description": "Boolean to trigger the email from the organization's email address"
+                    },
+                    "send_customer_statement": {
+                        "type": "string",
+                        "description": "Send customer statement pdf a with email."
+                    },
+                    "attachments": {
+                        "type": "string",
+                        "description": "Files to be attached to the email"
                     }
                 },
                 "required": [
@@ -1446,10 +1583,19 @@ tools = [
             "description": "Remind your customer about an unpaid invoices by email. Reminder mail will be send, only for the invoices is in open or overdue status. Maximum 10 invoices can be reminded at once.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                    "invoice_ids": {
+                        "type": "string",
+                        "description": "Array of invoice ids for which the reminder has to be sent."
+                    }
+                },
+                "required": [
+                    "invoice_ids"
+                ]
             },
-            "required": []
+            "required": [
+                "invoice_ids"
+            ]
         }
     },
     {
@@ -1459,10 +1605,19 @@ tools = [
             "description": "Maximum of 25 invoices can be exported in a single pdf.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                    "invoice_ids": {
+                        "type": "string",
+                        "description": "Comma separated invoice ids which are to be export as pdf."
+                    }
+                },
+                "required": [
+                    "invoice_ids"
+                ]
             },
-            "required": []
+            "required": [
+                "invoice_ids"
+            ]
         }
     },
     {
@@ -1472,10 +1627,19 @@ tools = [
             "description": "Export invoices as pdf and print them. Maximum of 25 invoices can be printed.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                    "invoice_ids": {
+                        "type": "string",
+                        "description": "Export invoices as pdf and print them. Maximum of 25 invoices can be printed."
+                    }
+                },
+                "required": [
+                    "invoice_ids"
+                ]
             },
-            "required": []
+            "required": [
+                "invoice_ids"
+            ]
         }
     },
     {
@@ -1749,7 +1913,16 @@ tools = [
             "description": "Attach a file to an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
+                "properties": {
+                    "can_send_in_mail": {
+                        "type": "string",
+                        "description": "True to send the attachment with the invoice when emailed."
+                    },
+                    "attachment": {
+                        "type": "string",
+                        "description": "The file to be attached.Allowed Extensions: "
+                    }
+                },
                 "required": []
             },
             "required": []
@@ -1762,10 +1935,19 @@ tools = [
             "description": "Set whether you want to send the attached file while emailing the invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                    "can_send_in_mail": {
+                        "type": "string",
+                        "description": "Boolean to send the attachment with the invoice when emailed."
+                    }
+                },
+                "required": [
+                    "can_send_in_mail"
+                ]
             },
-            "required": []
+            "required": [
+                "can_send_in_mail"
+            ]
         }
     },
     {
@@ -1775,7 +1957,12 @@ tools = [
             "description": "Returns the file attached to the invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
+                "properties": {
+                    "preview": {
+                        "type": "string",
+                        "description": "Get the thumbnail of the attachment."
+                    }
+                },
                 "required": []
             },
             "required": []
@@ -1822,11 +2009,19 @@ tools = [
                     "value": {
                         "type": "string",
                         "description": "Value of the Custom Field"
+                    },
+                    "organization_id": {
+                        "type": "string",
+                        "description": "ID of the organization"
                     }
                 },
-                "required": []
+                "required": [
+                    "organization_id"
+                ]
             },
-            "required": []
+            "required": [
+                "organization_id"
+            ]
         }
     },
     {
@@ -1836,7 +2031,20 @@ tools = [
             "description": "Add a comment for an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "no description provided"
+                    },
+                    "payment_expected_date": {
+                        "type": "string",
+                        "description": "no description provided"
+                    },
+                    "show_comment_to_clients": {
+                        "type": "string",
+                        "description": "Boolean to check if the comment to be shown to the clients"
+                    }
+                },
                 "required": []
             },
             "required": []
@@ -1862,7 +2070,16 @@ tools = [
             "description": "Update an existing comment of an invoice.",
             "parameters": {
                 "type": "object",
-                "properties": {},
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "The comment on a invoice"
+                    },
+                    "show_comment_to_clients": {
+                        "type": "string",
+                        "description": "Boolean to check if the comment to be shown to the clients"
+                    }
+                },
                 "required": []
             },
             "required": []
@@ -1888,10 +2105,37 @@ tools = [
             "description": "This API generates a payment link for the invoice with an expiry date.",
             "parameters": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                    "transaction_id": {
+                        "type": "string",
+                        "description": "The ID of the transaction (Invoice ID)."
+                    },
+                    "transaction_type": {
+                        "type": "string",
+                        "description": "The type of the transaction (Invoice)."
+                    },
+                    "link_type": {
+                        "type": "string",
+                        "description": "The type of the link (Private or Public)."
+                    },
+                    "expiry_time": {
+                        "type": "string",
+                        "description": "The expiry time of the payment link. Supported format : "
+                    }
+                },
+                "required": [
+                    "transaction_id",
+                    "transaction_type",
+                    "link_type",
+                    "expiry_time"
+                ]
             },
-            "required": []
+            "required": [
+                "transaction_id",
+                "transaction_type",
+                "link_type",
+                "expiry_time"
+            ]
         }
     }
 ]
