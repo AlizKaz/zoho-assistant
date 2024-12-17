@@ -1,4 +1,5 @@
 import json
+from domain import domains
 
 
 def func_to_string(func):
@@ -97,86 +98,38 @@ def get_json_schema_type(data_type, **kwargs):
         raise Exception(f"unknown datatype: {data_type}, name:{kwargs.get('name')}")
 
 
-def func_to_tool(func):
-    properties = {}
-    required = []
+def func_to_tool(func: json) -> domains.Function:
+    from domain import domains
+    properties: list[domains.Property] = []
     all_args = func['arguments'] + func['query_params']
     for argument in all_args:
-        property = get_property(argument)
-        properties.update(property)
+        property_ = get_property(argument)
+        properties.append(property_)
 
-        if argument['required'].lower() == 'required':
-            required.append(argument['name'])
-
-    parameters = {'type': 'object', 'properties': properties, 'required': required}
+    domains.Parameters('object', properties)
 
     function_name = func['name']
-    # openai requires this
-    function_name = clean_function_name(function_name)
-    import re
-    if not re.match(r"^[a-zA-Z0-9_-]+$", function_name):
-        raise ValueError(f"Invalid characters in function_name: {function_name}")
 
-    json_schema_for_function = {
-        "name": function_name,
-        "description": func['description'] if 'description' in func else "no description provided",
-        "parameters": parameters,
-        "required": required,
-    }
-    from jsonschema import Draft7Validator, exceptions
+    parameters = domains.Parameters("object", properties)
 
-    try:
-        Draft7Validator.check_schema(json_schema_for_function)
-        print("Schema is valid!")
-    except exceptions.SchemaError as e:
-        print(f"Schema is invalid: {e.message}")
-
-    return {"type": "function",
-            "function": json_schema_for_function}
-    pass
+    return domains.Function(function_name, func['description'], parameters)
 
 
-def clean_function_name(function_name):
-    return (function_name
-            .strip()
-            .replace(" ", "_")
-            .replace("'", "_")
-            .replace(".", "_")
-            .replace("&", "and")
-            .lower())
-
-
-def get_property(argument):
+def get_property(argument) -> domains.Property:
     json_schema_type = get_json_schema_type(argument['data_type'], name=argument['name'])
-    property = {argument['name']: {'type': json_schema_type, 'description': None}}
-    property_dict = property[argument['name']]
-    property_dict['type'] = json_schema_type
-    property_dict['description'] = argument["description"] if argument['description'] is not None \
-        else 'no description provided'
-    if json_schema_type == "array":
-        property_dict["items"] = {
-            "type": "string"
-        }
+    required = False
+    if argument['required'].lower() == 'required':
+        required = True
 
-        if "sub_attributes" in argument:
-            property_dict["items"] = {
-                "type": "object"
-            }
-            sub_property_dict = {}
-            for sub_attr in argument["sub_attributes"]:
-                sub_property = get_property(sub_attr)
-                sub_property_dict.update(sub_property)
-            property_dict["items"]["properties"] = sub_property_dict
-
-    elif json_schema_type == "object":
-        sub_property_dict = {}
+    property_ = domains.Property(argument['name'], json_schema_type, argument['description'], required)
+    if json_schema_type in ("array", "object"):
 
         if "sub_attributes" in argument:
             for sub_attr in argument["sub_attributes"]:
                 sub_property = get_property(sub_attr)
-                sub_property_dict.update(sub_property)
-        property_dict["properties"] = sub_property_dict
-    return property
+                property_.add_item(sub_property)
+
+    return property_
 
 
 def generate_tools():
@@ -185,18 +138,19 @@ def generate_tools():
     funcs = json.load(f)
 
     print(f"function count: {len(funcs)}")
-    tools = []
+    tools: domains.Tools = domains.Tools()
     for func in funcs:
-        tool = func_to_tool(func)
-        tools.append(tool)
+        function: domains.Function = func_to_tool(func)
+        tools.add_tool(domains.Tool("function", function))
         # print(tool)
         # print("\n")
     # print(tools)
-    print(json.dumps(tools, indent=4))
+    tools.validate()
+    print(json.dumps(tools.to_json(), indent=4))
 
     with open("invoice_tools.py", "w") as text_file:
         text_file.write("tools = ")
-        json.dump(tools, text_file, indent=4)
+        json.dump(tools.to_json(), text_file, indent=4)
         text_file.write("\n")
 
     return tools
