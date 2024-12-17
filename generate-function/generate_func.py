@@ -100,8 +100,8 @@ def get_json_schema_type(data_type, **kwargs):
 def func_to_tool(func):
     properties = {}
     required = []
-
-    for argument in func['arguments']:
+    all_args = func['arguments'] + func['query_params']
+    for argument in all_args:
         property = get_property(argument)
         properties.update(property)
 

@@ -71,13 +71,12 @@ class Config:
         self.invoice = None
         self.accounts_server_url = None
         self.zoho_auth = None
-        self.system_message = f"You are an assistant in helping me perform Zoho Invoicing Books API. " \
-                              "You are able to have a conversation or perform the tasks specified in the tools. " \
-                              "The user must specify if a task from one of the tools should be called, " \
-                              "not by AI guessing. " \
-                              "Please ask the user for follow up question if you are uncertain. " \
-                              "Don't make assumptions about what values to plug into functions. " \
-                              "Ask for clarification only if a user request is ambiguous."
+        self.system_message = (f"You are an assistant specializing in helping me work with the Zoho Invoicing Books "
+                               f"API. Your role is to assist with conversations, provide guidance, or perform tasks "
+                               f"using the specified tools. Only perform a task when explicitly requested by the "
+                               f"user—do not guess or assume values for functions. If any request or input is "
+                               f"unclear, ask follow-up questions for clarification. Avoid making assumptions and "
+                               f"ensure all steps are user-confirmed before execution.")
 
     def init_zoho_auth(self):
         auth_store_location = os.environ.get("auth_store_location")
