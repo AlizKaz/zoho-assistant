@@ -166,3 +166,4 @@ logs
 app/streamlit.settings
 *.env*
 Pipfile.lock
+.vscode
